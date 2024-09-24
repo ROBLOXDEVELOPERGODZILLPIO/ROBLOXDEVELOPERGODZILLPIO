@@ -3,7 +3,7 @@ local Debris = game:GetService("Debris")
 local Animation = Instance.new("Animation")
 local AnimationTrack = Instance.new("AnimationTrack")
 local JumpAnim = "rbxassetid://your-jump-anim-id" -- Replace with the ID of your animation asset
-local PlayerSpeed = 16
+local PlayerSpeed = the speed you wan't it to be
 
 Animation.AnimationId = JumpAnim
 AnimationTrack.AnimationId = JumpAnim
