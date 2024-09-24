@@ -1,0 +1,26 @@
+local Humanoid = game.Players.LocalPlayer.Character.Humanoid
+local Debris = game:GetService("Debris")
+local Animation = Instance.new("Animation")
+local AnimationTrack = Instance.new("AnimationTrack")
+local JumpAnim = "rbxassetid://your-jump-anim-id" -- Replace with the ID of your animation asset
+local PlayerSpeed = 16
+
+Animation.AnimationId = JumpAnim
+AnimationTrack.AnimationId = JumpAnim
+AnimationTrack.Parent = Animation
+
+local function checkKeys(input)
+    if input.KeyCode == Enum.KeyCode.W then
+        if input.UserInputType == Enum.UserInputType.Begin then
+            -- Player started pressing W, play animation and increase speed
+            Humanoid.WalkSpeed = PlayerSpeed * 2
+            AnimationTrack:Play()
+        else
+            -- Player stopped pressing W, stop animation and reset speed
+            AnimationTrack:Stop()
+            Humanoid.WalkSpeed = PlayerSpeed
+        end
+    end
+end
+
+game:GetService("UserInputService").InputBegan:Connect(checkKeys)
