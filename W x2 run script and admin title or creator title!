@@ -1,0 +1,81 @@
+-- Create variables
+local Owner = nil
+local OwnerTitle = ""
+local Leaderstat = Instance.new("IntValue")
+local Animation = Instance.new("Animation")
+local AnimationTrack = Instance.new("AnimationTrack")
+local JumpAnim = "rbxassetid://your-jump-anim-id" -- Replace with the ID of your animation asset
+local PlayerSpeed = 16
+
+-- Create the animation
+Animation.AnimationId = JumpAnim
+AnimationTrack.AnimationId = JumpAnim
+AnimationTrack.Parent = Animation
+
+-- Check for ownership
+function CheckOwnership()
+    local GamePass = game:GetService("GamePassService"):GetPlayerOwnership()
+    for i, v in pairs(GamePass:GetPlayers()) do
+        if v.UserId == game.Players.LocalPlayer.UserId then
+            Owner = v.Name
+            OwnerTitle = Owner .. "'s Game"
+        end
+    end
+end
+
+-- Set the title
+function SetTitle()
+    local LeaderStat = Instance.new("IntValue")
+    LeaderStat.Parent = game.Players.LocalPlayer.PlayerGui.Leaderstats
+    LeaderStat.Name = "Title"
+    if Owner ~= "" then
+        LeaderStat.Value = OwnerTitle
+    else
+        LeaderStat.Value = ""
+    end
+end
+
+-- Hide title for non-owners
+function HideTitle()
+    local Title = game.Players.LocalPlayer.PlayerGui.Leaderstats:FindFirstChild("Title")
+    if Title then
+        Title:Destroy()
+    end
+end
+
+-- Main loop for updating the title and animating player speed
+while true do -- Run this loop indefinitely so it doesn't stop running.
+   CheckOwnership()
+   if Owner == "" then
+       HideTitle()
+   elseif Owner ~= game.Players.LocalPlayer.Name then
+       HideTitle()
+   else
+       SetTitle()
+   end
+
+   -- Get a reference to the character's Humanoid, which controls its movement.
+   local Humanoid = game.Players.LocalPlayer.Character.Humanoid
+
+   -- Connect the checkKeys function to input events.
+   local function checkKeys(input) 
+       if input.KeyCode == Enum.KeyCode.W then 
+           if input.UserInputType == Enum.UserInputType.Begin then 
+               -- Player started pressing W, play animation and increase speed.
+               Humanoid.WalkSpeed = PlayerSpeed * 2 
+               AnimationTrack:Play() 
+           else 
+               -- Player stopped pressing W, stop animation and reset speed.
+               AnimationTrack:Stop() 
+               Humanoid.WalkSpeed = PlayerSpeed  
+           end  
+       end  
+   end 
+
+   -- Check for any key presses.
+   local userInputService = game:GetService("UserInputService")
+   userInputService.InputBegan:Connect(checkKeys)
+
+   -- Wait briefly before checking again.
+   wait(0.1)
+end
